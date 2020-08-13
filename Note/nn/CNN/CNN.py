@@ -162,17 +162,9 @@ class cnn:
         with self.graph.as_default():
             for i in range(len(self.fc)):
                 if type(self.cpu_gpu)==str:
-                    self.forward_cpu_gpu[1].append(self.cpu_gpu)
-                elif len(self.cpu_gpu)!=len(self.fc):
-                    self.forward_cpu_gpu[1].append(self.cpu_gpu[1][0])
+                    self._processor[1].append(self.processor)
                 else:
-                    self.forward_cpu_gpu[1].append(self.cpu_gpu[1][i])
-            if use_nn==True:
-                for i in range(len(self.fc)):
-                    if type(self.use_cpu_gpu)==str:
-                        self.forward_cpu_gpu[1].append(self.use_cpu_gpu)
-                    else:
-                        self.forward_cpu_gpu[1].append(self.use_cpu_gpu[1][i])
+                    self._processor[1].append(self.processor[1][i])
             if use_nn==False:
                 weight_fc=self.weight_fc
                 bias_fc=self.bias_fc
@@ -208,7 +200,7 @@ class cnn:
             if type(dropout)==list:
                 data=tf.nn.dropout(data,dropout[0])
             for i in range(len(self.fc)):
-                with tf.device(self.forward_cpu_gpu[1][i]):
+                with tf.device(self._processor[1][i]):
                     if self.fc[i][1]=='sigmoid':
                         if i==0:
                             self.activation_fc[i]=tf.nn.sigmoid(tf.matmul(data,weight_fc[i])+bias_fc[i])
@@ -252,20 +244,12 @@ class cnn:
                 
     def forward_propagation(self,data,dropout=None,use_nn=False):
         with self.graph.as_default():
-            self.forward_cpu_gpu=[[],[]]
+            self._processor=[[],[]]
             for i in range(len(self.conv)):
-                if type(self.cpu_gpu)==str:
-                    self.forward_cpu_gpu[0].append(self.cpu_gpu)
-                elif len(self.cpu_gpu[0][0])!=len(self.conv):
-                    self.forward_cpu_gpu[0].append(self.cpu_gpu[0][0])
+                if type(self.processor)==str:
+                    self._processor[0].append(self.processor)
                 else:
-                    self.forward_cpu_gpu[0].append(self.cpu_gpu[0][i])
-            if use_nn==True:
-                for i in range(len(self.conv)):
-                    if type(self.use_cpu_gpu)==str:
-                        self.forward_cpu_gpu.append(self.use_cpu_gpu)
-                    else:
-                        self.forward_cpu_gpu.append(self.use_cpu_gpu[0][i])
+                    self._processor[0].append(self.processor[0][i])
             if use_nn==False:
                 weight_conv=self.weight_conv
                 bias_conv=self.bias_conv
@@ -278,7 +262,7 @@ class cnn:
             self.activation=[x for x in range(len(self.conv))]
             with tf.name_scope('forward_propagation'):
                 for i in range(len(self.conv)):
-                    with tf.device(self.forward_cpu_gpu[0][i]):
+                    with tf.device(self._processor[0][i]):
                         if type(self.function)==list:
                             if self.function[i]=='sigmoid':
                                 if i==0:
@@ -414,199 +398,194 @@ class cnn:
                 self.continue_train=True
             if processor!=None:
                 self.processor=processor
-            if type(self.processor)==list and len(self.processor)!=3:
-                train_processor='/gpu:0'
-            if type(self.processor)==str:
-                train_processor=self.processor
-            with tf.device(train_processor):
-                if continue_train==True and self.end_flag==True:
-                    self.end_flag=False
-                    self.weight_conv=[x for x in range(len(self.conv))]
-                    self.bias_conv=[x for x in range(len(self.conv))]
-                    for i in range(len(self.conv)):
-                        self.weight_conv[i]=tf.Variable(self.last_weight_conv[i],name='conv_{0}_weight'.format(i+1))
-                        self.bias_conv[i]=tf.Variable(self.last_bias_conv[i],name='conv_{0}_bias'.format(i+1))
-                    self.last_weight_conv.clear()
-                    self.last_bias_conv.clear()
-                    self.last_weight_fc.clear()
-                    self.last_bias_fc.clear()
-                if continue_train==True and self.flag==1:
-                    self.flag=0
-                    self.weight_conv=[x for x in range(len(self.conv))]
-                    self.bias_conv=[x for x in range(len(self.conv))]
-                    for i in range(len(self.conv)):
-                        self.weight_conv[i]=tf.Variable(self.last_weight_conv[i],name='conv_{0}_weight'.format(i+1))
-                        self.bias_conv[i]=tf.Variable(self.last_bias_conv[i],name='conv_{0}_bias'.format(i+1))
-                    self.last_weight_conv.clear()
-                    self.last_bias_conv.clear()
-                    self.last_weight_fc.clear()
-                    self.last_bias_fc.clear()
+            if continue_train==True and self.end_flag==True:
+                self.end_flag=False
+                self.weight_conv=[x for x in range(len(self.conv))]
+                self.bias_conv=[x for x in range(len(self.conv))]
+                for i in range(len(self.conv)):
+                    self.weight_conv[i]=tf.Variable(self.last_weight_conv[i],name='conv_{0}_weight'.format(i+1))
+                    self.bias_conv[i]=tf.Variable(self.last_bias_conv[i],name='conv_{0}_bias'.format(i+1))
+                self.last_weight_conv.clear()
+                self.last_bias_conv.clear()
+                self.last_weight_fc.clear()
+                self.last_bias_fc.clear()
+            if continue_train==True and self.flag==1:
+                self.flag=0
+                self.weight_conv=[x for x in range(len(self.conv))]
+                self.bias_conv=[x for x in range(len(self.conv))]
+                for i in range(len(self.conv)):
+                    self.weight_conv[i]=tf.Variable(self.last_weight_conv[i],name='conv_{0}_weight'.format(i+1))
+                    self.bias_conv[i]=tf.Variable(self.last_bias_conv[i],name='conv_{0}_bias'.format(i+1))
+                self.last_weight_conv.clear()
+                self.last_bias_conv.clear()
+                self.last_weight_fc.clear()
+                self.last_bias_fc.clear()
 #     －－－－－－－－－－－－－－－forward propagation－－－－－－－－－－－－－－－
-                train_output=self.forward_propagation(self.data,self.dropout)
+            train_output=self.forward_propagation(self.data,self.dropout)
 #     －－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－
-                with tf.name_scope('train_loss'):
-                    if self.labels_shape[1]==1:
-                        if l2==None:
-                            train_loss=tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=train_output,labels=self.labels))
-                        else:
-                            train_loss=tf.nn.sigmoid_cross_entropy_with_logits(logits=train_output,labels=self.labels)
-                            train_loss=tf.reduce_mean(train_loss+l2/2*(sum([tf.reduce_sum(x**2) for x in self.weight_conv])+sum([tf.reduce_sum(x**2) for x in self.weight_fc])))
+            with tf.name_scope('train_loss'):
+                if self.labels_shape[1]==1:
+                    if l2==None:
+                        train_loss=tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=train_output,labels=self.labels))
                     else:
-                        if l2==None:
-                            train_loss=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=train_output,labels=self.labels))
-                        else:
-                            train_loss=tf.nn.softmax_cross_entropy_with_logits_v2(logits=train_output,labels=self.labels)
-                            train_loss=tf.reduce_mean(train_loss+l2/2*(sum([tf.reduce_sum(x**2) for x in self.weight_conv])+sum([tf.reduce_sum(x**2) for x in self.weight_fc])))
-                if self.optimizer=='Gradient':
-                    opt=tf.train.GradientDescentOptimizer(learning_rate=lr).minimize(train_loss)
-                if self.optimizer=='RMSprop':
-                    opt=tf.train.RMSPropOptimizer(learning_rate=lr).minimize(train_loss)
-                if self.optimizer=='Momentum':
-                    opt=tf.train.MomentumOptimizer(learning_rate=lr,momentum=0.99).minimize(train_loss)
-                if self.optimizer=='Adam':
-                    opt=tf.train.AdamOptimizer(learning_rate=lr).minimize(train_loss)
-                with tf.name_scope('train_accuracy'):
-                    equal=tf.equal(tf.argmax(train_output,1),tf.argmax(self.labels,1))
-                    train_accuracy=tf.reduce_mean(tf.cast(equal,tf.float32))
-                if train_summary_path!=None:
-                    train_loss_scalar=tf.summary.scalar('train_loss',train_loss)
-                    train_merging=tf.summary.merge([train_loss_scalar])
-                    train_accuracy_scalar=tf.summary.scalar('train_accuracy',train_accuracy)
-                    train_merging=tf.summary.merge([ train_accuracy_scalar])
-                    train_writer=tf.summary.FileWriter(train_summary_path)
-                config=tf.ConfigProto()
-                config.gpu_options.allow_growth=True
-                config.allow_soft_placement=True
-                sess=tf.Session(config=config)
-                sess.run(tf.global_variables_initializer())
-                self.sess=sess
-                if self.total_epoch==0:
-                    epoch=epoch+1
-                t1=time.time()
-                for i in range(epoch):
-                    if batch!=None:
-                        batches=int((self.shape0-self.shape0%batch)/batch)
-                        total_loss=0
-                        total_acc=0
-                        random=np.arange(self.shape0)
-                        np.random.shuffle(random)
-                        train_data=self.train_data[random]
-                        train_labels=self.train_labels[random]
-                        for j in range(batches):
-                            index1=j*batch
-                            index2=(j+1)*batch
-                            train_data_batch=train_data[index1:index2]
-                            train_labels_batch=train_labels[index1:index2]
-                            feed_dict={self.data:train_data_batch,self.labels:train_labels_batch}
-                            if i==0 and self.total_epoch==0:
-                                batch_loss=sess.run(train_loss,feed_dict=feed_dict)
-                            else:
-                                batch_loss,_=sess.run([train_loss,opt],feed_dict=feed_dict)
-                            total_loss+=batch_loss
-                            batch_acc=sess.run(train_accuracy,feed_dict=feed_dict)
-                            total_acc+=batch_acc
-                        if self.shape0%batch!=0:
-                            batches+=1
-                            index1=batches*batch
-                            index2=batch-(self.shape0-batches*batch)
-                            train_data_batch=np.concatenate([train_data[index1:],train_data[:index2]])
-                            train_labels_batch=np.concatenate([train_labels[index1:],train_labels[:index2]])
-                            feed_dict={self.data:train_data_batch,self.labels:train_labels_batch}
-                            if i==0 and self.total_epoch==0:
-                                batch_loss=sess.run(train_loss,feed_dict=feed_dict)
-                            else:
-                                batch_loss,_=sess.run([train_loss,opt],feed_dict=feed_dict)
-                            total_loss+=batch_loss
-                            batch_acc=sess.run(train_accuracy,feed_dict=feed_dict)
-                            total_acc+=batch_acc
-                        loss=total_loss/batches
-                        train_acc=total_acc/batches
-                        self.train_loss_list.append(loss.astype(np.float32))
-                        self.train_loss=loss
-                        self.train_loss=self.train_loss.astype(np.float32)
-                        self.train_accuracy_list.append(train_acc.astype(np.float32))
-                        self.train_accuracy=train_acc
-                        self.train_accuracy=self.train_accuracy.astype(np.float32)
+                        train_loss=tf.nn.sigmoid_cross_entropy_with_logits(logits=train_output,labels=self.labels)
+                        train_loss=tf.reduce_mean(train_loss+l2/2*(sum([tf.reduce_sum(x**2) for x in self.weight_conv])+sum([tf.reduce_sum(x**2) for x in self.weight_fc])))
+                else:
+                    if l2==None:
+                        train_loss=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=train_output,labels=self.labels))
                     else:
-                        random=np.arange(self.shape0)
-                        np.random.shuffle(random)
-                        train_data=self.train_data[random]
-                        train_labels=self.train_labels[random]
-                        feed_dict={self.data:train_data,self.labels:train_labels}
+                        train_loss=tf.nn.softmax_cross_entropy_with_logits_v2(logits=train_output,labels=self.labels)
+                        train_loss=tf.reduce_mean(train_loss+l2/2*(sum([tf.reduce_sum(x**2) for x in self.weight_conv])+sum([tf.reduce_sum(x**2) for x in self.weight_fc])))
+            if self.optimizer=='Gradient':
+                opt=tf.train.GradientDescentOptimizer(learning_rate=lr).minimize(train_loss)
+            if self.optimizer=='RMSprop':
+                opt=tf.train.RMSPropOptimizer(learning_rate=lr).minimize(train_loss)
+            if self.optimizer=='Momentum':
+                opt=tf.train.MomentumOptimizer(learning_rate=lr,momentum=0.99).minimize(train_loss)
+            if self.optimizer=='Adam':
+                opt=tf.train.AdamOptimizer(learning_rate=lr).minimize(train_loss)
+            with tf.name_scope('train_accuracy'):
+                equal=tf.equal(tf.argmax(train_output,1),tf.argmax(self.labels,1))
+                train_accuracy=tf.reduce_mean(tf.cast(equal,tf.float32))
+            if train_summary_path!=None:
+                train_loss_scalar=tf.summary.scalar('train_loss',train_loss)
+                train_merging=tf.summary.merge([train_loss_scalar])
+                train_accuracy_scalar=tf.summary.scalar('train_accuracy',train_accuracy)
+                train_merging=tf.summary.merge([ train_accuracy_scalar])
+                train_writer=tf.summary.FileWriter(train_summary_path)
+            config=tf.ConfigProto()
+            config.gpu_options.allow_growth=True
+            config.allow_soft_placement=True
+            sess=tf.Session(config=config)
+            sess.run(tf.global_variables_initializer())
+            self.sess=sess
+            if self.total_epoch==0:
+                epoch=epoch+1
+            t1=time.time()
+            for i in range(epoch):
+                if batch!=None:
+                    batches=int((self.shape0-self.shape0%batch)/batch)
+                    total_loss=0
+                    total_acc=0
+                    random=np.arange(self.shape0)
+                    np.random.shuffle(random)
+                    train_data=self.train_data[random]
+                    train_labels=self.train_labels[random]
+                    for j in range(batches):
+                        index1=j*batch
+                        index2=(j+1)*batch
+                        train_data_batch=train_data[index1:index2]
+                        train_labels_batch=train_labels[index1:index2]
+                        feed_dict={self.data:train_data_batch,self.labels:train_labels_batch}
                         if i==0 and self.total_epoch==0:
-                            loss=sess.run(train_loss,feed_dict=feed_dict)
+                            batch_loss=sess.run(train_loss,feed_dict=feed_dict)
                         else:
-                            loss,_=sess.run([train_loss,opt],feed_dict=feed_dict)
-                        self.train_loss_list.append(loss.astype(np.float32))
-                        self.train_loss=loss
-                        self.train_loss=self.train_loss.astype(np.float32)
-                        accuracy=sess.run(train_accuracy,feed_dict=feed_dict)
-                        self.train_accuracy_list.append(accuracy.astype(np.float32))
-                        self.train_accuracy=accuracy
-                        self.train_accuracy=self.train_accuracy.astype(np.float32)
-                    if epoch%10!=0:
-                        temp_epoch=epoch-epoch%10
-                        temp_epoch=int(temp_epoch/10)
-                    else:
-                        temp_epoch=epoch/10
-                    if temp_epoch==0:
-                        temp_epoch=1
-                    if i%temp_epoch==0:
-                        if continue_train==True:
-                            print('epoch:{0}   loss:{1:.6f}'.format(self.total_epoch+i+1,self.train_loss))
+                            batch_loss,_=sess.run([train_loss,opt],feed_dict=feed_dict)
+                        total_loss+=batch_loss
+                        batch_acc=sess.run(train_accuracy,feed_dict=feed_dict)
+                        total_acc+=batch_acc
+                    if self.shape0%batch!=0:
+                        batches+=1
+                        index1=batches*batch
+                        index2=batch-(self.shape0-batches*batch)
+                        train_data_batch=np.concatenate([train_data[index1:],train_data[:index2]])
+                        train_labels_batch=np.concatenate([train_labels[index1:],train_labels[:index2]])
+                        feed_dict={self.data:train_data_batch,self.labels:train_labels_batch}
+                        if i==0 and self.total_epoch==0:
+                            batch_loss=sess.run(train_loss,feed_dict=feed_dict)
                         else:
-                            print('epoch:{0}   loss:{1:.6f}'.format(i,self.train_loss))
-                        if model_path!=None and i%epoch*2==0:
-                            self.save(model_path,i,one)
-                        if train_summary_path!=None:
-                            train_summary=sess.run(train_merging,feed_dict=feed_dict)
-                            train_writer.add_summary(train_summary,i)
-                t2=time.time()
-                _time=(t2-t1)-int(t2-t1)
-                if continue_train!=True or self.time==0:
-                    self.total_time=_time
+                            batch_loss,_=sess.run([train_loss,opt],feed_dict=feed_dict)
+                        total_loss+=batch_loss
+                        batch_acc=sess.run(train_accuracy,feed_dict=feed_dict)
+                        total_acc+=batch_acc
+                    loss=total_loss/batches
+                    train_acc=total_acc/batches
+                    self.train_loss_list.append(loss.astype(np.float32))
+                    self.train_loss=loss
+                    self.train_loss=self.train_loss.astype(np.float32)
+                    self.train_accuracy_list.append(train_acc.astype(np.float32))
+                    self.train_accuracy=train_acc
+                    self.train_accuracy=self.train_accuracy.astype(np.float32)
                 else:
-                    self.total_time+=_time
-                if _time<0.5:
-                    self.time=int(t2-t1)
-                else:
-                    self.time=int(t2-t1)+1
-                print()
-                print('last loss:{0:.6f}'.format(self.train_loss))
-                print('accuracy:{0:.3f}%'.format(self.train_accuracy*100))
-                if train_summary_path!=None:
-                    train_writer.close()
-                if continue_train==True:
-                    self.last_weight_conv=sess.run(self.weight_conv)
-                    self.last_bias_conv=sess.run(self.bias_conv)
-                    self.last_weight_fc=sess.run(self.weight_fc)
-                    self.last_bias_fc=sess.run(self.bias_fc)
-                    for i in range(len(self.conv)):
-                        self.weight_conv[i]=tf.Variable(self.last_weight_conv[i],name='conv_{0}_weight'.format(i+1))
-                        self.bias_conv[i]=tf.Variable(self.last_bias_conv[i],name='conv_{0}_bias'.format(i+1))
-                    for i in range(len(self.fc)+1):
-                        if i==len(self.fc):
-                            self.weight_fc[i]=tf.Variable(self.last_weight_fc[i],name='output_weight')
-                            self.bias_fc[i]=tf.Variable(self.last_bias_fc[i],name='output_bias')
-                        else:
-                            self.weight_fc[i]=tf.Variable(self.last_weight_fc[i],name='fc_{0}_weight'.format(i+1))
-                            self.bias_fc[i]=tf.Variable(self.last_bias_fc[i],name='fc_{0}_weight'.format(i+1))
-                    self.last_weight_conv.clear()
-                    self.last_bias_conv.clear()
-                    self.last_weight_fc.clear()
-                    self.last_bias_fc.clear()
-                    sess.run(tf.global_variables_initializer())
-                if continue_train==True:
-                    if self.total_epoch==0:
-                        self.total_epoch=epoch-1
-                        self.epoch=epoch-1
+                    random=np.arange(self.shape0)
+                    np.random.shuffle(random)
+                    train_data=self.train_data[random]
+                    train_labels=self.train_labels[random]
+                    feed_dict={self.data:train_data,self.labels:train_labels}
+                    if i==0 and self.total_epoch==0:
+                        loss=sess.run(train_loss,feed_dict=feed_dict)
                     else:
-                        self.total_epoch=self.total_epoch+epoch
-                        self.epoch=epoch
-                if continue_train!=True:
+                        loss,_=sess.run([train_loss,opt],feed_dict=feed_dict)
+                    self.train_loss_list.append(loss.astype(np.float32))
+                    self.train_loss=loss
+                    self.train_loss=self.train_loss.astype(np.float32)
+                    accuracy=sess.run(train_accuracy,feed_dict=feed_dict)
+                    self.train_accuracy_list.append(accuracy.astype(np.float32))
+                    self.train_accuracy=accuracy
+                    self.train_accuracy=self.train_accuracy.astype(np.float32)
+                if epoch%10!=0:
+                    temp_epoch=epoch-epoch%10
+                    temp_epoch=int(temp_epoch/10)
+                else:
+                    temp_epoch=epoch/10
+                if temp_epoch==0:
+                    temp_epoch=1
+                if i%temp_epoch==0:
+                    if continue_train==True:
+                        print('epoch:{0}   loss:{1:.6f}'.format(self.total_epoch+i+1,self.train_loss))
+                    else:
+                        print('epoch:{0}   loss:{1:.6f}'.format(i,self.train_loss))
+                    if model_path!=None and i%epoch*2==0:
+                        self.save(model_path,i,one)
+                    if train_summary_path!=None:
+                        train_summary=sess.run(train_merging,feed_dict=feed_dict)
+                        train_writer.add_summary(train_summary,i)
+            t2=time.time()
+            _time=(t2-t1)-int(t2-t1)
+            if continue_train!=True or self.time==0:
+                self.total_time=_time
+            else:
+                self.total_time+=_time
+            if _time<0.5:
+                self.time=int(t2-t1)
+            else:
+                self.time=int(t2-t1)+1
+            print()
+            print('last loss:{0:.6f}'.format(self.train_loss))
+            print('accuracy:{0:.3f}%'.format(self.train_accuracy*100))
+            if train_summary_path!=None:
+                train_writer.close()
+            if continue_train==True:
+                self.last_weight_conv=sess.run(self.weight_conv)
+                self.last_bias_conv=sess.run(self.bias_conv)
+                self.last_weight_fc=sess.run(self.weight_fc)
+                self.last_bias_fc=sess.run(self.bias_fc)
+                for i in range(len(self.conv)):
+                    self.weight_conv[i]=tf.Variable(self.last_weight_conv[i],name='conv_{0}_weight'.format(i+1))
+                    self.bias_conv[i]=tf.Variable(self.last_bias_conv[i],name='conv_{0}_bias'.format(i+1))
+                for i in range(len(self.fc)+1):
+                    if i==len(self.fc):
+                        self.weight_fc[i]=tf.Variable(self.last_weight_fc[i],name='output_weight')
+                        self.bias_fc[i]=tf.Variable(self.last_bias_fc[i],name='output_bias')
+                    else:
+                        self.weight_fc[i]=tf.Variable(self.last_weight_fc[i],name='fc_{0}_weight'.format(i+1))
+                        self.bias_fc[i]=tf.Variable(self.last_bias_fc[i],name='fc_{0}_weight'.format(i+1))
+                self.last_weight_conv.clear()
+                self.last_bias_conv.clear()
+                self.last_weight_fc.clear()
+                self.last_bias_fc.clear()
+                sess.run(tf.global_variables_initializer())
+            if continue_train==True:
+                if self.total_epoch==0:
+                    self.total_epoch=epoch-1
                     self.epoch=epoch-1
-                print('time:{0}s'.format(self.time))
-                return
+                else:
+                    self.total_epoch=self.total_epoch+epoch
+                    self.epoch=epoch
+            if continue_train!=True:
+                self.epoch=epoch-1
+            print('time:{0}s'.format(self.time))
+            return
     
     
     def end(self):
@@ -978,42 +957,37 @@ class cnn:
         with self.graph.as_default():
             if processor!=None:
                 self.processor=processor
-            if type(processor)==str:
-                _processor=processor
-            else:
-                _processor=processor[-1]
-            with tf.device(_processor):
-                data=tf.constant(data)
-                output=self.forward_propagation(data,use_nn=True)
-                config=tf.ConfigProto()
-                config.gpu_options.allow_growth=True
-                config.allow_soft_placement=True
-                with tf.Session(config=config) as sess:
-                    output=sess.run(output)
-                    if one_hot==True:
-                        softmax=np.sum(np.exp(output),axis=1).reshape(output.shape[0],1)
-                        softmax=np.exp(output)/softmax
-                        index=np.argmax(softmax,axis=1)
-                        output=np.zeros([output.shape[0],output.shape[1]])
-                        for i in range(output.shape[0]):
-                            output[i][index[i]]+=1
-                        if save_path!=None:
-                            output_file=open(save_path,'wb')
-                            pickle.dump(output,output_file)
-                            output_file.close()
-                        elif save_csv!=None:
-                            data=pd.DataFrame(output)
-                            data.to_csv(save_csv,index=False,header=False)
-                        return output
-                    else:
-                        softmax=np.sum(np.exp(output),axis=1).reshape(output.shape[0],1)
-                        softmax=np.exp(output)/softmax
-                        output=np.argmax(softmax,axis=1)+1
-                        if save_path!=None:
-                            output_file=open(save_path,'wb')
-                            pickle.dump(output,output_file)
-                            output_file.close()
-                        elif save_csv!=None:
-                            data=pd.DataFrame(output)
-                            data.to_csv(save_csv,index=False,header=False)
-                        return output
+            data=tf.constant(data)
+            output=self.forward_propagation(data,use_nn=True)
+            config=tf.ConfigProto()
+            config.gpu_options.allow_growth=True
+            config.allow_soft_placement=True
+            with tf.Session(config=config) as sess:
+                output=sess.run(output)
+                if one_hot==True:
+                    softmax=np.sum(np.exp(output),axis=1).reshape(output.shape[0],1)
+                    softmax=np.exp(output)/softmax
+                    index=np.argmax(softmax,axis=1)
+                    output=np.zeros([output.shape[0],output.shape[1]])
+                    for i in range(output.shape[0]):
+                        output[i][index[i]]+=1
+                    if save_path!=None:
+                        output_file=open(save_path,'wb')
+                        pickle.dump(output,output_file)
+                        output_file.close()
+                    elif save_csv!=None:
+                        data=pd.DataFrame(output)
+                        data.to_csv(save_csv,index=False,header=False)
+                    return output
+                else:
+                    softmax=np.sum(np.exp(output),axis=1).reshape(output.shape[0],1)
+                    softmax=np.exp(output)/softmax
+                    output=np.argmax(softmax,axis=1)+1
+                    if save_path!=None:
+                        output_file=open(save_path,'wb')
+                        pickle.dump(output,output_file)
+                        output_file.close()
+                    elif save_csv!=None:
+                        data=pd.DataFrame(output)
+                        data.to_csv(save_csv,index=False,header=False)
+                    return output
