@@ -36,8 +36,6 @@ class transformer:
             self.epoch=0
             self.lr=None
             self.layers=None
-        self.hyperparameter=None
-        self.regulation=None
         self.optimizer=None
         self.train_loss=None
         self.train_acc=None
@@ -70,7 +68,6 @@ class transformer:
         self.dtype=dtype
         with tf.name_scope('hyperparameter'):
             self.layers=layers
-        self.hyperparameter={'layers':'encoder-decoder layers'}
         self.time=None
         self.total_time=None
         with tf.name_scope('parameter_initialization'):
@@ -265,7 +262,7 @@ class transformer:
             variable=[self.qw1,self.kw1,self.vw1,self.fw1,self.qw2,self.kw2,self.vw2,self.qw3,self.kw3,self.vw3,self.fw2]
             variable=self.extend(variable)
         with tf.name_scope('optimizer'):
-            self.optimizer=['Adam',{'lr':lr}]
+            self.optimizer='Adam'
             optimizer=optimizers.Adam(lr)
         if self.total_epoch==0:
             epoch=epoch+1
@@ -366,13 +363,13 @@ class transformer:
                         self.test_loss_list.append(self.test_loss)
                         self.test_acc_list.append(self.test_acc)
             if epoch%10!=0:
-                temp_epoch=epoch-epoch%10
-                temp_epoch=int(temp_epoch/10)
+                temp=epoch-epoch%10
+                temp=int(temp/10)
             else:
-                temp_epoch=epoch/10
-            if temp_epoch==0:
-                temp_epoch=1
-            if i%temp_epoch==0:
+                temp=epoch/10
+            if temp==0:
+                temp=1
+            if i%temp==0:
                 if self.total_epoch==0:
                     print('epoch:{0}   loss:{1:.6f}'.format(i,self.train_loss))
                 else:
@@ -385,7 +382,7 @@ class transformer:
             self.time=int(t2-t1)
         else:
             self.time=int(t2-t1)+1
-	self.total_time+=self.time
+        self.total+=self.time
         print()
         print('last loss:{0:.6f}'.format(self.train_loss))
         print('accuracy:{0:.1f}%'.format(self.train_acc*100))
@@ -572,8 +569,6 @@ class transformer:
             pickle.dump(self.epoch,output_file)
             pickle.dump(self.lr,output_file)
             pickle.dump(self.layers,output_file)
-        pickle.dump(self.hyperparameter,output_file)
-        pickle.dump(self.regulation,output_file)
         pickle.dump(self.optimizer,output_file)
         pickle.dump(self.shape0,output_file)
         pickle.dump(self.train_loss,output_file)
@@ -616,8 +611,6 @@ class transformer:
             self.epoch=pickle.load(input_file)
             self.lr=pickle.load(input_file)
             self.layers=pickle.load(input_file)
-        self.hyperparameter=pickle.load(input_file)
-        self.regulation=pickle.load(input_file)
         self.optimizer=pickle.load(input_file)
         self.shape0=pickle.load(input_file)
         self.train_loss=pickle.load(input_file)
