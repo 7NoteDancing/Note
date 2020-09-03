@@ -32,10 +32,8 @@ class Note:
             self.l2=None
             self.dropout=None
             self.hyperparameter=self.model.hyperparameter
-        with tf.name_scope('regulation'):
-            self.regulation=self.model.regulation
-        with tf.name_scope('optimizer'):
-            self.optimizer=self.model.optimzier
+        self.regulation=self.model.regulation
+        self.optimizer=self.model.optimzier
         self.train_loss=None
         self.train_acc=None
         self.train_loss_list=[]
@@ -371,12 +369,8 @@ class Note:
         print('batch:{0}'.format(self.batch))
         print()
         print('epoch:{0}'.format(self.epoch))
-        if self.regulation!=None:
-            print()
-            print('regulation:{0}'.format(self.regulation))
-        if self.optimizer!=None:
-            print()
-            print('optimizer:{0}'.format(self.optimizer))
+        print()
+        print('optimizer:{0}'.format(self.optimizer))
         print()
         print('learning rate:{0}'.format(self.lr))
         print()
@@ -500,10 +494,8 @@ class Note:
             pickle.dump(self.l2,output_file)
             pickle.dump(self.dropout,output_file)
             pickle.dump(self.hyperparameter,output_file)
-        with tf.name_scope('save_regulation'):
-            pickle.dump(self.regulation,output_file)
-        with tf.name_scope('save_optimizer'):
-            pickle.dump(self.optimizer,output_file)
+        pickle.dump(self.regulation,output_file)
+        pickle.dump(self.optimizer,output_file)
         pickle.dump(self.model.accuracy,output_file)
         pickle.dump(self.model.acc,output_file)
         pickle.dump(self.shape0,output_file)
@@ -537,10 +529,8 @@ class Note:
             self.l2=pickle.load(input_file)
             self.dropout=pickle.load(input_file)
             self.hyperparameter=pickle.load(input_file)
-        with tf.name_scope('restore_regulation'):
-            self.regulation=pickle.load(input_file)
-        with tf.name_scope('restore_optimizer'):
-            self.optimizer=pickle.load(input_file)
+        self.regulation=pickle.load(input_file)
+        self.optimizer=pickle.load(input_file)
         self.model.accuracy=pickle.load(input_file)
         self.model.acc=pickle.load(input_file)
         self.shape0=pickle.load(input_file)
