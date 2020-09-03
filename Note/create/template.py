@@ -14,10 +14,8 @@ class unnamed:
             self.parameter=[]
         with tf.name_scope('hyperparameter'):
             self.hyperparameter=None
-        with tf.name_scope('regulation'):
-            self.regulation=None
-        with tf.name_scope('optimizer'):
-            self.optimizer=None
+        self.regulation=None
+        self.optimizer=None
         self.p_accumulator=0
         self.accuracy=1
         self.acc=None
