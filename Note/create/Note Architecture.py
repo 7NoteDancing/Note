@@ -24,10 +24,8 @@ class unnamed:
             self.lr=None
             
             
-        with tf.name_scope('regulation'):   
-            self.regulation=None   
-        with tf.name_scope('optimizer'):
-            self.optimizer=None
+        self.regulation=None   
+        self.optimizer=None
         self.train_loss=None
         self.train_acc=None
         self.train_loss_list=[]
@@ -295,12 +293,8 @@ class unnamed:
         print('batch:{0}'.format(self.batch))
         print()
         print('epoch:{0}'.format(self.epoch))
-        if self.regulation!=None:
-            print()
-            print('regulation:{0}'.format(self.regulation))
-        if self.optimizer!=None:
-            print()
-            print('optimizer:{0}'.format(self.optimizer))
+        print()
+        print('optimizer:{0}'.format(self.optimizer))
         print()
         print('learning rate:{0}'.format(self.lr))
         print()
@@ -418,10 +412,8 @@ class unnamed:
             pickle.dump(self.lr,output_file)
             
             
-        with tf.name_scope('save_regulation'):
-            pickle.dump(self.regulation,output_file)   
-        with tf.name_scope('save_optimizer'):
-            pickle.dump(self.optimizer,output_file)
+        pickle.dump(self.regulation,output_file)   
+        pickle.dump(self.optimizer,output_file)
         pickle.dump(self.shape0,output_file)
         pickle.dump(self.train_loss,output_file)
         pickle.dump(self.train_acc,output_file)
@@ -452,10 +444,8 @@ class unnamed:
             self.lr=pickle.load(input_file)
             
             
-        with tf.name_scope('restore_regulation'):
-            self.regulation=pickle.load(input_file)
-        with tf.name_scope('restore_optimizer'):
-            self.optimizer=pickle.load(input_file)
+        self.regulation=pickle.load(input_file)
+        self.optimizer=pickle.load(input_file)
         self.shape0=pickle.load(input_file)
         self.train_loss=pickle.load(input_file)
         self.train_acc=pickle.load(input_file)
