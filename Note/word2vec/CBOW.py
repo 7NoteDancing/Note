@@ -83,8 +83,6 @@ class CBOW:
                 else:
                     self.train_loss_list.clear()
             if self.continue_train==False and continue_train==True:
-                if self.end_flag==False and self.flag==0:
-                    self.epoch=None
                 self.train_loss_list.clear()
                 self.continue_train=True
             if processor!=None:
