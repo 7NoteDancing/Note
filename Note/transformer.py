@@ -330,7 +330,7 @@ class transformer:
                 self.train_acc=self.train_acc.astype(np.float32)
                 if test==True:
                     with tf.name_scope('test'):
-                        self.test_loss,self.test_acc=self.test(self.tst_data,self.test_labels,test_batch)
+                        self.test_loss,self.test_acc=self.test(self.test_data,self.test_labels,test_batch)
                         self.test_loss_list.append(self.test_loss)
                         self.test_acc_list.append(self.test_acc)
             else:
@@ -359,7 +359,7 @@ class transformer:
                 self.train_acc=self.train_acc.astype(np.float32)
                 if test==True:
                     with tf.name_scope('test'):
-                        self.test_loss,self.test_acc=self.test(self.tst_data,self.test_labels,test_batch)
+                        self.test_loss,self.test_acc=self.test(self.test_data,self.test_labels,test_batch)
                         self.test_loss_list.append(self.test_loss)
                         self.test_acc_list.append(self.test_acc)
             if epoch%10!=0:
@@ -581,7 +581,6 @@ class transformer:
             pickle.dump(self.test_acc,output_file)
             pickle.dump(self.test_loss_list,output_file)
             pickle.dump(self.test_acc_list,output_file)
-        pickle.dump(self.epoch,output_file)
         pickle.dump(self.total_epoch,output_file)
         pickle.dump(self.time,output_file)
         pickle.dump(self.total_time,output_file)
@@ -623,7 +622,6 @@ class transformer:
             self.test_acc=pickle.load(input_file)
             self.test_loss_list=pickle.load(input_file)
             self.test_acc_list=pickle.load(input_file)
-        self.epoch=pickle.load(input_file)
         self.total_epoch=pickle.load(input_file)
         self.time=pickle.load(input_file)
         self.total_time=pickle.load(input_file)
