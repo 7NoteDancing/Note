@@ -330,7 +330,7 @@ class transformer:
                 self.train_acc=self.train_acc.astype(np.float32)
                 if test==True:
                     with tf.name_scope('test'):
-                        self.test_loss,self.test_acc=self.test(self.tst_data,self.test_labels,test_batch)
+                        self.test_loss,self.test_acc=self.test(self.test_data,self.test_labels,test_batch)
                         self.test_loss_list.append(self.test_loss)
                         self.test_acc_list.append(self.test_acc)
             else:
@@ -359,7 +359,7 @@ class transformer:
                 self.train_acc=self.train_acc.astype(np.float32)
                 if test==True:
                     with tf.name_scope('test'):
-                        self.test_loss,self.test_acc=self.test(self.tst_data,self.test_labels,test_batch)
+                        self.test_loss,self.test_acc=self.test(self.test_data,self.test_labels,test_batch)
                         self.test_loss_list.append(self.test_loss)
                         self.test_acc_list.append(self.test_acc)
             if epoch%10!=0:
