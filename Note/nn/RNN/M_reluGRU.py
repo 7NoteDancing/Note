@@ -728,7 +728,6 @@ class m_relugru:
             self.cltm_bias=None
             self.weight_o=None
             self.bias_o=None
-            self.total_epoch=self.epoch
             self.sess.close()
             return    
                 
