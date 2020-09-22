@@ -159,7 +159,7 @@ class unnamed:
                 self.train_loss_list.append(loss.astype(np.float32))
                 self.train_loss=loss
                 self.train_loss=self.train_loss.astype(np.float32)
-                self.train_acc_list.append(float(train_acc))
+                self.train_acc_list.append(train_acc.astype(np.float32))
                 self.train_acc=train_acc
                 self.train_acc=self.train_acc.astype(np.float32)
                 if test==True:
@@ -190,7 +190,7 @@ class unnamed:
                  
                   
                 acc=train_acc.numpy()
-                self.train_acc_list.append(float(acc))
+                self.train_acc_list.append(acc.astype(np.float32))
                 self.train_acc=acc
                 self.train_acc=self.train_acc.astype(np.float32)
                 if test==True:
