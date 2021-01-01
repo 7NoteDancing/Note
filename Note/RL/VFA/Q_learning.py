@@ -17,8 +17,8 @@ class Q_learning:
         self.epsilon=epsilon
         self.discount=discount
         self.episode_step=episode_step
-        self.lr=lr
         self.optimizer=optimizer
+        self.lr=lr
         self.save_episode=save_episode
         self.opt_flag=False
         self.episode_num=0
@@ -103,13 +103,13 @@ class Q_learning:
                     t2=time.time()
                     self.time+=(t2-t1)
             if episode_num%10!=0:
-                temp=episode_num-episode_num%10
-                temp=int(temp/10)
+                d=episode_num-episode_num%10
+                d=int(d/10)
             else:
-                temp=episode_num/10
-            if temp==0:
-                temp=1
-            if i%temp==0:
+                d=episode_num/10
+            if d==0:
+                d=1
+            if i%d==0:
                 print('episode num:{0}   loss:{1:.6f}'.format(i+1,loss))
                 if path!=None and i%episode_num*2==0:
                     self.save(path,i,one)
