@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import pickle
-from keras.preprocessing.image import ImageDataGenerator
 import time
 
 
@@ -58,16 +57,6 @@ class CNN:
         self.time=0
         self.total_time=0
         self.processor='/gpu:0'
-    
-    
-    def data_enhance(self,rotation_range=40,width_shift_range=0.2,height_shift_range=0.2,
-                     shear_range=0.2,zoom_range=0.2,horizontal_flip=True,fill_mode='nearest'):
-        datagen=ImageDataGenerator(rotation_range=rotation_range,width_shift_range=width_shift_range,height_shift_range=height_shift_range,
-                                   shear_range=shear_range,zoom_range=zoom_range,horizontal_flip=horizontal_flip,fill_mode=fill_mode)
-        for data in datagen.flow(self.train_data,batch_size=self.train_data.shape[0]):
-            self.train_data=data
-            break
-        return
     
     
     def weight_init(self,shape,mean,stddev,name):
@@ -517,13 +506,13 @@ class CNN:
                         self.test_accuracy_list.append(self.test_accuracy)
                 self.epoch+=1
                 if epoch%10!=0:
-                    temp=epoch-epoch%10
-                    temp=int(temp/10)
+                    d=epoch-epoch%10
+                    d=int(d/10)
                 else:
-                    temp=epoch/10
-                if temp==0:
-                    temp=1
-                if i%temp==0:
+                    d=epoch/10
+                if d==0:
+                    d=1
+                if i%d==0:
                     if continue_train==True:
                         print('epoch:{0}   loss:{1:.6f}'.format(self.total_epoch+i+1,self.train_loss))
                     else:
