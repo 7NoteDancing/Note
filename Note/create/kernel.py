@@ -6,7 +6,7 @@ import pickle
 import time
 
 
-class Note:
+class kernel:
     def __init__(self,nn):
         self.nn=nn
         self.tf2=c.tf2()
@@ -52,8 +52,8 @@ class Note:
         self.time=0
         self.total_time=0
         self.processor='GPU:0'
-    
-    
+
+
     def init(self):
         self.nn.flag=0
         self.parameter=[]
@@ -306,13 +306,13 @@ class Note:
             self.epoch+=1
             self.total_epoch+=1
             if epoch%10!=0:
-                temp=epoch-epoch%10
-                temp=int(temp/10)
+                d=epoch-epoch%10
+                d=int(d/10)
             else:
-                temp=epoch/10
-            if temp==0:
-                temp=1
-            if i%temp==0:
+                d=epoch/10
+            if d==0:
+                d=1
+            if i%d==0:
                 if self.total_epoch==0:
                     print('epoch:{0}   loss:{1:.6f}'.format(i,self.train_loss))
                 else:
