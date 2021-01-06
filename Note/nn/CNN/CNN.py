@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import pickle
-from keras.preprocessing.image import ImageDataGenerator
 import time
 
 
@@ -57,16 +56,6 @@ class cnn:
         self.time=0
         self.total_time=0
         self.processor='/gpu:0'
-    
-    
-    def data_enhance(self,rotation_range=40,width_shift_range=0.2,height_shift_range=0.2,
-                     shear_range=0.2,zoom_range=0.2,horizontal_flip=True,fill_mode='nearest'):
-        datagen=ImageDataGenerator(rotation_range=rotation_range,width_shift_range=width_shift_range,height_shift_range=height_shift_range,
-                                   shear_range=shear_range,zoom_range=zoom_range,horizontal_flip=horizontal_flip,fill_mode=fill_mode)
-        for data in datagen.flow(self.train_data,batch_size=self.train_data.shape[0]):
-            self.train_data=data
-            break
-        return
     
     
     def weight_init(self,shape,mean,stddev,name):
@@ -527,7 +516,7 @@ class cnn:
                 self.time=int(t2-t1)
             else:
                 self.time=int(t2-t1)+1
-	    self.total_time+=self.time
+            self.total+=self.time
             print()
             print('last loss:{0:.6f}'.format(self.train_loss))
             print('accuracy:{0:.3f}%'.format(self.train_accuracy*100))
