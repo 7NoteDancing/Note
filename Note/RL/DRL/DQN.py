@@ -271,6 +271,7 @@ class DQN:
         pickle.dump(self.action_pool,output_file)
         pickle.dump(self.next_state_pool,output_file)
         pickle.dump(self.reward_pool,output_file)
+        pickle.dump(self.episode,output_file)
         pickle.dump(self.action_len,output_file)
         pickle.dump(self.action,output_file)
         pickle.dump(self.action_p,output_file)
@@ -297,6 +298,7 @@ class DQN:
         self.action_pool=pickle.load(input_file)
         self.next_state_pool=pickle.load(input_file)
         self.reward_pool=pickle.load(input_file)
+        self.episode=pickle.load(input_file)
         self.action_len=pickle.load(input_file)
         if self.action_len==len(self.action_name):
             self.action=pickle.load(input_file)
