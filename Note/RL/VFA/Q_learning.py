@@ -133,6 +133,7 @@ class Q_learning:
             output_file=open(path+'.dat','wb')
         else:
             output_file=open(path+'-{0}.dat'.format(i+1),'wb')
+        pickle.dump(self.episdoe,output_file)
         pickle.dump(self.action_len,output_file)
         pickle.dump(self.action,output_file)
         pickle.dump(self.action_p,output_file)
@@ -152,6 +153,7 @@ class Q_learning:
     
     def restore(self,path):
         input_file=open(path,'rb')
+        self.episode=pickle.load(input_file)
         self.action_len=pickle.load(input_file)
         if self.action_len==len(self.action_name):
             self.action=pickle.load(input_file)
