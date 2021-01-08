@@ -146,6 +146,7 @@ class on_policy_mc:
             output_file=open(path+'.dat','wb')
         else:
             output_file=open(path+'-{0}.dat'.format(i+1),'wb')
+        pickle.dump(self.episode,output_file)
         pickle.dump(self.r_sum,output_file)
         pickle.dump(self.r_count,output_file)
         pickle.dump(self.action_len,output_file)
@@ -166,6 +167,7 @@ class on_policy_mc:
     
     def restore(self,path):
         input_file=open(path,'rb')
+        self.episode=pickle.load(input_file)
         self.r_sum=pickle.load(input_file)
         self.r_count=pickle.load(input_file)
         self.action_len=pickle.load(input_file)
