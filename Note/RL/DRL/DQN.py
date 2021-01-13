@@ -102,10 +102,10 @@ class DQN:
                         self.next_state_pool=tf.expand_dims(self.state[self.state_name[next_s]],axis=0)
                         self.reward_pool=tf.expand_dims(r,axis=0)
                     else:
-                        self.state_pool=tf.concat(self.state_pool,np.expand_dims(self.state[self.state_name[s]],axis=0))
-                        self.action_pool=tf.concat(self.action_pool,np.expand_dims(a,axis=0))
-                        self.next_state_pool=tf.concat(self.next_state_pool,np.expand_dims(self.state[self.state_name[next_s]],axis=0))
-                        self.reward_pool=tf.concat(self.reward_pool,np.expand_dims(r,axis=0))
+                        self.state_pool=tf.concat(self.state_pool,tf.expand_dims(self.state[self.state_name[s]],axis=0))
+                        self.action_pool=tf.concat(self.action_pool,tf.expand_dims(a,axis=0))
+                        self.next_state_pool=tf.concat(self.next_state_pool,tf.expand_dims(self.state[self.state_name[next_s]],axis=0))
+                        self.reward_pool=tf.concat(self.reward_pool,tf.expand_dims(r,axis=0))
                     if len(self.state_pool)>self.pool_size:
                         self.state_pool=self.state_pool[1:]
                         self.action_pool=self.action_pool[1:]
@@ -176,10 +176,10 @@ class DQN:
                         self.next_state_pool=tf.expand_dims(self.state[self.state_name[next_s]],axis=0)
                         self.reward_pool=tf.expand_dims(r,axis=0)
                     else:
-                        self.state_pool=tf.concat(self.state_pool,np.expand_dims(self.state[self.state_name[s]],axis=0))
-                        self.action_pool=tf.concat(self.action_pool,np.expand_dims(a,axis=0))
-                        self.next_state_pool=tf.concat(self.next_state_pool,np.expand_dims(self.state[self.state_name[next_s]],axis=0))
-                        self.reward_pool=tf.concat(self.reward_pool,np.expand_dims(r,axis=0))
+                        self.state_pool=tf.concat(self.state_pool,tf.expand_dims(self.state[self.state_name[s]],axis=0))
+                        self.action_pool=tf.concat(self.action_pool,tf.expand_dims(a,axis=0))
+                        self.next_state_pool=tf.concat(self.next_state_pool,tf.expand_dims(self.state[self.state_name[next_s]],axis=0))
+                        self.reward_pool=tf.concat(self.reward_pool,tf.expand_dims(r,axis=0))
                     if len(self.state_pool)>self.pool_size:
                         self.state_pool=self.state_pool[1:]
                         self.action_pool=self.action_pool[1:]
