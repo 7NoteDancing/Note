@@ -11,7 +11,6 @@ import time
 
 class unnamed:
     def __init__():
-        self.c=TF2.tf2()
         with tf.name_scope('data/shape0'):
            
             
@@ -142,7 +141,7 @@ class unnamed:
                         else:
                             with tf.name_scope('apply_gradient'):
                                 if self.optimizer!=None:
-                                    self.tf2.apply_gradient(tape,self.optimizer,batch_loss,parameter)
+                                    c.apply_gradient(tape,self.optimizer,batch_loss,parameter)
                                 else:
                                     gradient=tape.gradient(batch_loss,parameter)
                                     self.optimizern(gradient,parameter)
@@ -169,7 +168,7 @@ class unnamed:
                         else:
                             with tf.name_scope('apply_gradient'):
                                 if self.optimizer!=None:
-                                    self.tf2.apply_gradient(tape,self.optimizer,batch_loss,parameter)
+                                    c.apply_gradient(tape,self.optimizer,batch_loss,parameter)
                                 else:
                                     gradient=tape.gradient(batch_loss,parameter)
                                     self.optimizern(gradient,parameter)
@@ -206,7 +205,7 @@ class unnamed:
                     else:
                        with tf.name_scope('apply_gradient'):
                            if self.optimizer!=None:
-                               self.tf2.apply_gradient(tape,self.optimizer,batch_loss,parameter)
+                               c.apply_gradient(tape,self.optimizer,batch_loss,parameter)
                            else:
                                gradient=tape.gradient(batch_loss,parameter)
                                self.optimizern(gradient,parameter)
