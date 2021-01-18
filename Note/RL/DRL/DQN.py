@@ -10,7 +10,7 @@ class DQN:
         self.estimate_p=estimate_p
         self.target_p=target_p
         self.state_pool=None
-        self.action_oneool=None
+        self.action_pool=None
         self.next_state_pool=None
         self.reward_pool=None
         self.episode=[]
@@ -51,18 +51,23 @@ class DQN:
     
     
     def epsilon_greedy_policy(self,s,action_one):
-        action_onerob=action_one
-        action_onerob=action_onerob*self.epsilon/len(action_one)
+        action_prob=action_one
+        action_prob=action_prob*self.epsilon/len(action_one)
         best_a=np.argmax(self.value_net(self.state[self.state_name[s]]))
-        action_onerob[best_a]+=1-self.epsilon
-        return action_onerob
+        action_prob[best_a]+=1-self.epsilon
+        return action_prob
     
     
     def batch(self,index1,index2):
-        if index1==self.batches*self.batch:
-            return self.state_pool[np.concatenate([self.random[index1:],self.random[:index2]])],self.action_oneool[np.concatenate([self.random[index1:],self.random[:index2]])],self.next_state_pool[np.concatenate([self.random[index1:],self.random[:index2]])],self.reward_pool[np.concatenate([self.random[index1:],self.random[:index2]])]
+        if len(self.state_pool)<self.pool_size:
+            self.random=np.arange(len(self.state_pool))
         else:
-            return self.state_pool[self.random[index1:index2]],self.action_oneool[self.random[index1:index2]],self.next_state_pool[self.random[index1:index2]],self.reward_pool[self.random[index1:index2]]
+            self.random=self._random
+        np.random.shuffle(self.random)
+        if index1==self.batches*self.batch:
+            return self.state_pool[np.concatenate([self.random[index1:],self.random[:index2]])],self.action_pool[np.concatenate([self.random[index1:],self.random[:index2]])],self.next_state_pool[np.concatenate([self.random[index1:],self.random[:index2]])],self.reward_pool[np.concatenate([self.random[index1:],self.random[:index2]])]
+        else:
+            return self.state_pool[self.random[index1:index2]],self.action_pool[self.random[index1:index2]],self.next_state_pool[self.random[index1:index2]],self.reward_pool[self.random[index1:index2]]
     
     
     def update_parameter(self):
@@ -77,21 +82,16 @@ class DQN:
     
     
     def learn(self,episode_num,path=None,one=True):
-        if len(self.state_pool)<self.pool_size:
-            self.random=np.arange(len(self.state_pool))
-        else:
-            self.random=self._random
         for i in range(episode_num):
             self.a=0
             loss=0
             episode=[]
             s=int(np.random.uniform(0,len(self.state_name)))
-            np.random.shuffle(self.random)
             if self.episode_step==None:
                 while True:
                     t1=time.time()
-                    action_onerob=self.epsilon_greedy_policy(s,self.action_one)
-                    a=np.random.choice(self.action,p=action_onerob)
+                    action_prob=self.epsilon_greedy_policy(s,self.action_one)
+                    a=np.random.choice(self.action,p=action_prob)
                     next_s,r,end=self.search_space[self.state_name[s]][self.action_name[a]]
                     if end:
                         if self.save_episode==True:
@@ -102,22 +102,22 @@ class DQN:
                     self.a+=1
                     if self.state_pool==None:
                         self.state_pool=tf.expand_dims(self.state[self.state_name[s]],axis=0)
-                        self.action_oneool=tf.expand_dims(a,axis=0)
+                        self.action_pool=tf.expand_dims(a,axis=0)
                         self.next_state_pool=tf.expand_dims(self.state[self.state_name[next_s]],axis=0)
                         self.reward_pool=tf.expand_dims(r,axis=0)
                     else:
                         self.state_pool=tf.concat(self.state_pool,tf.expand_dims(self.state[self.state_name[s]],axis=0))
-                        self.action_oneool=tf.concat(self.action_oneool,tf.expand_dims(a,axis=0))
+                        self.action_pool=tf.concat(self.action_pool,tf.expand_dims(a,axis=0))
                         self.next_state_pool=tf.concat(self.next_state_pool,tf.expand_dims(self.state[self.state_name[next_s]],axis=0))
                         self.reward_pool=tf.concat(self.reward_pool,tf.expand_dims(r,axis=0))
                     if len(self.state_pool)>self.pool_size:
                         self.state_pool=self.state_pool[1:]
-                        self.action_oneool=self.action_oneool[1:]
+                        self.action_pool=self.action_pool[1:]
                         self.next_state_pool=self.next_state_pool[1:]
                         self.reward_pool=self.reward_pool[1:]
                     s=next_s
-                    if len(self.memory_state)<self.batch:
-                        loss=self.loss(self.state_pool,self.action_oneool,self.next_state_pool,self.reward_pool)
+                    if len(self.state_pool)<self.batch:
+                        loss=self.loss(self.state_pool,self.action_pool,self.next_state_pool,self.reward_pool)
                         with tf.GradientTape() as tape:
                             gradient=tape.gradient(loss,self.estimate_p)
                             if self.opt_flag==True:
@@ -138,10 +138,10 @@ class DQN:
                                 else:
                                     self.optimizer.apply_gradients(zip(gradient,self.estimate_p))
                             loss+=batch_loss
-                        if len(self.memory_state)%self.batch!=0:
+                        if len(self.state_pool)%self.batch!=0:
                             self.batches+=1
                             index1=self.batches*self.batch
-                            index2=self.batch-(len(self.memory_state)-self.batches*self.batch)
+                            index2=self.batch-(len(self.state_pool)-self.batches*self.batch)
                             state_batch,action_batch,next_state_batch,reward_batch=self.batch(j,index1,index2)
                             batch_loss=self.loss(state_batch,action_batch,next_state_batch,reward_batch)
                             with tf.GradientTape() as tape:
@@ -151,9 +151,9 @@ class DQN:
                                 else:
                                     self.optimizer.apply_gradients(zip(gradient,self.estimate_p))
                             loss+=batch_loss
-                        if len(self.memory_state)%self.batch!=0:
+                        if len(self.state_pool)%self.batch!=0:
                             loss=loss.numpy()/self.batches+1
-                        elif len(self.memory_state)<self.batch:
+                        elif len(self.state_pool)<self.batch:
                             loss=loss.numpy()
                         else:
                             loss=loss.numpy()/self.batches
@@ -164,8 +164,8 @@ class DQN:
             else:
                 for _ in range(self.episode_step):
                     t1=time.time()
-                    action_onerob=self.epsilon_greedy_policy(s,self.action_one)
-                    a=np.random.choice(self.action,p=action_onerob)
+                    action_prob=self.epsilon_greedy_policy(s,self.action_one)
+                    a=np.random.choice(self.action,p=action_prob)
                     next_s,r,end=self.search_space[self.state_name[s]][self.action_name[a]]
                     if end:
                         if self.save_episode==True:
@@ -176,22 +176,22 @@ class DQN:
                     self.a+=1
                     if self.state_pool==None:
                         self.state_pool=tf.expand_dims(self.state[self.state_name[s]],axis=0)
-                        self.action_oneool=tf.expand_dims(a,axis=0)
+                        self.action_pool=tf.expand_dims(a,axis=0)
                         self.next_state_pool=tf.expand_dims(self.state[self.state_name[next_s]],axis=0)
                         self.reward_pool=tf.expand_dims(r,axis=0)
                     else:
                         self.state_pool=tf.concat(self.state_pool,tf.expand_dims(self.state[self.state_name[s]],axis=0))
-                        self.action_oneool=tf.concat(self.action_oneool,tf.expand_dims(a,axis=0))
+                        self.action_pool=tf.concat(self.action_pool,tf.expand_dims(a,axis=0))
                         self.next_state_pool=tf.concat(self.next_state_pool,tf.expand_dims(self.state[self.state_name[next_s]],axis=0))
                         self.reward_pool=tf.concat(self.reward_pool,tf.expand_dims(r,axis=0))
                     if len(self.state_pool)>self.pool_size:
                         self.state_pool=self.state_pool[1:]
-                        self.action_oneool=self.action_oneool[1:]
+                        self.action_pool=self.action_pool[1:]
                         self.next_state_pool=self.next_state_pool[1:]
                         self.reward_pool=self.reward_pool[1:]
                     s=next_s
-                    if len(self.memory_state)<self.batch:
-                        loss=self.loss(self.state_pool,self.action_oneool,self.next_state_pool,self.reward_pool)
+                    if len(self.state_pool)<self.batch:
+                        loss=self.loss(self.state_pool,self.action_pool,self.next_state_pool,self.reward_pool)
                         with tf.GradientTape() as tape:
                             gradient=tape.gradient(loss,self.estimate_p)
                             if self.opt_flag==True:
@@ -212,10 +212,10 @@ class DQN:
                                 else:
                                     self.optimizer.apply_gradients(zip(gradient,self.estimate_p))
                             loss+=batch_loss
-                        if len(self.memory_state)%self.batch!=0:
+                        if len(self.state_pool)%self.batch!=0:
                             self.batches+=1
                             index1=self.batches*self.batch
-                            index2=self.batch-(len(self.memory_state)-self.batches*self.batch)
+                            index2=self.batch-(len(self.state_pool)-self.batches*self.batch)
                             state_batch,action_batch,next_state_batch,reward_batch=self.batch(j,index1,index2)
                             batch_loss=self.loss(state_batch,action_batch,next_state_batch,reward_batch)
                             with tf.GradientTape() as tape:
@@ -225,9 +225,9 @@ class DQN:
                                 else:
                                     self.optimizer.apply_gradients(zip(gradient,self.estimate_p))
                             loss+=batch_loss
-                        if len(self.memory_state)%self.batch!=0:
+                        if len(self.state_pool)%self.batch!=0:
                             loss=loss.numpy()/self.batches+1
-                        elif len(self.memory_state)<self.batch:
+                        elif len(self.state_pool)<self.batch:
                             loss=loss.numpy()
                         else:
                             loss=loss.numpy()/self.batches
@@ -267,7 +267,7 @@ class DQN:
         else:
             output_file=open(path+'-{0}.dat'.format(i+1),'wb')
         pickle.dump(self.state_pool,output_file)
-        pickle.dump(self.action_oneool,output_file)
+        pickle.dump(self.action_pool,output_file)
         pickle.dump(self.next_state_pool,output_file)
         pickle.dump(self.reward_pool,output_file)
         pickle.dump(self.episode,output_file)
@@ -294,7 +294,7 @@ class DQN:
     def restore(self,path):
         input_file=open(path,'rb')
         self.state_pool=pickle.load(input_file)
-        self.action_oneool=pickle.load(input_file)
+        self.action_pool=pickle.load(input_file)
         self.next_state_pool=pickle.load(input_file)
         self.reward_pool=pickle.load(input_file)
         self.episode=pickle.load(input_file)
