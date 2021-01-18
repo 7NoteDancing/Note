@@ -11,7 +11,7 @@ import time
 
 class unnamed:
     def __init__():
-        self.c=TF2.tf2()
+        self.tf2=c.tf2()
         with tf.name_scope('data/shape0'):
            
             
@@ -100,7 +100,7 @@ class unnamed:
         for i in range(epoch):
             if batch!=None:
                 batches=int((self.shape0-self.shape0%batch)/batch)
-                tf2.batches=batches
+                self.tf2.batches=batches
                 total_loss=0
                 total_acc=0
                 random=np.arange(self.shape0)
@@ -109,8 +109,8 @@ class unnamed:
                     
                 
                 for j in range(batches):
-                    tf2.index1=j*batch
-                    tf2.index2=(j+1)*batch
+                    self.tf2.index1=j*batch
+                    self.tf2.index2=(j+1)*batch
                     with tf.name_scope('data_batch'):
                         
                     
@@ -132,9 +132,9 @@ class unnamed:
                     total_acc+=batch_acc
                 if self.shape0%batch!=0:
                     batches+=1
-                    tf2.batches+=1
-                    tf2.index1=batches*batch
-                    tf2.index2=batch-(self.shape0-batches*batch)
+                    self.tf2.batches+=1
+                    self.tf2.index1=batches*batch
+                    self.tf2.index2=batch-(self.shape0-batches*batch)
                     with tf.name_scope('data_batch'):
                         
                     
@@ -239,10 +239,10 @@ class unnamed:
             total_loss=0
             total_acc=0
             batches=int((test_data.shape[0]-test_data.shape[0]%batch)/batch)
-            tf2.batches=batches
+            self.tf2.batches=batches
             for j in range(batches):
-                tf2.index1=j*batch
-                tf2.index2=(j+1)*batch
+                self.tf2.index1=j*batch
+                self.tf2.index2=(j+1)*batch
                 with tf.name_scope('data_batch'):
                     
                     
@@ -256,9 +256,9 @@ class unnamed:
                 total_acc+=batch_acc.numpy()
             if test_data.shape[0]%batch!=0:
                 batches+=1
-                tf2.batches+=1
-                tf2.index1=batches*batch
-                tf2.index2=batch-(self.shape0-batches*batch)
+                self.tf2.batches+=1
+                self.tf2.index1=batches*batch
+                self.tf2.index2=batch-(self.shape0-batches*batch)
                 with tf.name_scope('data_batch'):
                     
                     
