@@ -169,7 +169,7 @@ class kernel:
                         else:
                             with tf.name_scope('apply_gradient'):
                                 if self.optimizer!=None:
-                                    self.tf2.apply_gradient(tape,self.optimizer,batch_loss,self.parameter)
+                                    c.apply_gradient(tape,self.optimizer,batch_loss,self.parameter)
                                 else:
                                     gradient=tape.gradient(batch_loss,self.parameter)
                                     self.optimizern(gradient,self.parameter)
@@ -217,7 +217,7 @@ class kernel:
                         else:
                             with tf.name_scope('apply_gradient'):
                                 if self.optimizer!=None:
-                                    self.tf2.apply_gradient(tape,self.optimizer,batch_loss,self.parameter)
+                                    c.apply_gradient(tape,self.optimizer,batch_loss,self.parameter)
                                 else:
                                     gradient=tape.gradient(batch_loss,self.parameter)
                                     self.optimizern(gradient,self.parameter)
@@ -287,7 +287,7 @@ class kernel:
                     else:
                        with tf.name_scope('apply_gradient'):
                            if self.optimizer!=None:
-                               self.tf2.apply_gradient(tape,self.optimizer,batch_loss,self.parameter)
+                               c.apply_gradient(tape,self.optimizer,batch_loss,self.parameter)
                            else:
                                gradient=tape.gradient(batch_loss,self.parameter)
                                self.optimizern(gradient,self.parameter)
