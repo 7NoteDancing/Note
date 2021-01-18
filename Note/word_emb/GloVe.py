@@ -16,7 +16,7 @@ class GloVe:
                 self.shape0=cword.shape[0]
                 self.cword_place=tf.placeholder(dtype=cword.dtype,shape=[None,None],name='cword')
                 self.bword_place=tf.placeholder(dtype=bword.dtype,shape=[None,None],name='bword')
-                self.mul=tf.placeholder(dtype=mul.dtype,shape=[None],name='mul')
+                self.mul_place=tf.placeholder(dtype=mul.dtype,shape=[None],name='mul')
                 self.cword_dtype=cword.dtype
                 self.bword_dtype=bword.dtype
                 self.mul_dtype=mul.dtype
@@ -163,7 +163,7 @@ class GloVe:
                         cword_batch=cword[index1:index2]
                         bword_batch=bword[index1:index2]
                         mul_batch=mul[index1:index2]
-                        feed_dict={self.cword_place:cword_batch,self.bword_place:bword_batch,self.mul:mul_batch}
+                        feed_dict={self.cword_place:cword_batch,self.bword_place:bword_batch,self.mul_place:mul_batch}
                         if i==0 and self.total_epoch==0:
                             batch_loss=sess.run(train_loss,feed_dict=feed_dict)
                         else:
@@ -176,7 +176,7 @@ class GloVe:
                         cword_batch=np.concatenate([cword[index1:],cword[:index2]])
                         bword_batch=np.concatenate([bword[index1:],bword[:index2]])
                         mul_batch=np.concatenate([mul[index1:],mul[:index2]])
-                        feed_dict={self.cword_place:cword_batch,self.bword_place:bword_batch,self.mul:mul_batch}
+                        feed_dict={self.cword_place:cword_batch,self.bword_place:bword_batch,self.mul_place:mul_batch}
                         if i==0 and self.total_epoch==0:
                             batch_loss=sess.run(train_loss,feed_dict=feed_dict)
                         else:
@@ -192,7 +192,7 @@ class GloVe:
                     cword=self.cword[random]
                     bword=self.bword[random]
                     mul=self.mul[random]
-                    feed_dict={self.cword_place:cword,self.bword_place:bword,self.mul:mul}
+                    feed_dict={self.cword_place:cword,self.bword_place:bword,self.mul_place:mul}
                     if i==0 and self.total_epoch==0:
                         loss=sess.run(train_loss,feed_dict=feed_dict)
                     else:
@@ -342,7 +342,7 @@ class GloVe:
         with self.graph.as_default():
             self.cword_place=tf.placeholder(dtype=self.cword_dtype,shape=[None,None],name='cword')
             self.bword_place=tf.placeholder(dtype=self.bword_dtype,shape=[None,None],name='bword')
-            self.mul=tf.placeholder(dtype=self.mul_dtype,shape=[None],name='mul')
+            self.mul_place=tf.placeholder(dtype=self.mul_dtype,shape=[None],name='mul')
         self.batch=pickle.load(input_file)
         self.lr=pickle.load(input_file)
         self.optimizer=pickle.load(input_file)
