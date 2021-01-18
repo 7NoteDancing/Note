@@ -16,7 +16,7 @@ class GloVe:
                 self.shape0=cword.shape[0]
                 self.cword_place=tf.placeholder(dtype=cword.dtype,shape=[None,None],name='cword')
                 self.bword_place=tf.placeholder(dtype=bword.dtype,shape=[None,None],name='bword')
-                self.mul=tf.placeholder(dtype=mul.dtype,shape=[None],name='mul')
+                self.mul_place=tf.placeholder(dtype=mul.dtype,shape=[None],name='mul')
                 self.cword_dtype=cword.dtype
                 self.bword_dtype=bword.dtype
                 self.mul_dtype=mul.dtype
@@ -173,7 +173,7 @@ class GloVe:
                         cword_batch=np.concatenate([cword[index1:],cword[:index2]])
                         bword_batch=np.concatenate([bword[index1:],bword[:index2]])
                         mul_batch=np.concatenate([mul[index1:],mul[:index2]])
-                        feed_dict={self.cword_place:cword_batch,self.bword_place:bword_batch,self.mul:mul_batch}
+                        feed_dict={self.cword_place:cword_batch,self.bword_place:bword_batch,self.mul_place:mul_batch}
                         if i==0 and self.total_epoch==0:
                             batch_loss=sess.run(train_loss,feed_dict=feed_dict)
                         else:
@@ -189,7 +189,7 @@ class GloVe:
                     cword=self.cword[random]
                     bword=self.bword[random]
                     mul=self.mul[random]
-                    feed_dict={self.cword_place:cword,self.bword_place:bword,self.mul:mul}
+                    feed_dict={self.cword_place:cword,self.bword_place:bword,self.mul_place:mul}
                     if i==0 and self.total_epoch==0:
                         loss=sess.run(train_loss,feed_dict=feed_dict)
                     else:
@@ -220,7 +220,7 @@ class GloVe:
                 self.time=int(t2-t1)
             else:
                 self.time=int(t2-t1)+1
-	    self.total_time+=self.time
+            self.total+=self.time
             print()
             print('last loss:{0}'.format(self.train_loss))
             if train_summary_path!=None:
@@ -333,7 +333,7 @@ class GloVe:
         input_file=open(model_path,'rb')
         self.last_cword_weight=pickle.load(input_file)  
         self.last_bword_weight=pickle.load(input_file)
-        self.last_cword_bias=pickle.load(input_file)  
+        self.last_cword_bias=pickle.load(input_file)
         self.last_bword_bias=pickle.load(input_file)
         self.shape0=pickle.load(input_file)
         self.cword_dtype=pickle.load(input_file)
@@ -343,7 +343,7 @@ class GloVe:
         with self.graph.as_default():
             self.cword_place=tf.placeholder(dtype=self.cword_dtype,shape=[None,None],name='cword')
             self.bword_place=tf.placeholder(dtype=self.bword_dtype,shape=[None,None],name='bword')
-            self.mul=tf.placeholder(dtype=self.mul_dtype,shape=[None],name='mul')
+            self.mul_place=tf.placeholder(dtype=self.mul_dtype,shape=[None],name='mul')
         self.batch=pickle.load(input_file)
         self.epoch=pickle.load(input_file)
         self.lr=pickle.load(input_file)
