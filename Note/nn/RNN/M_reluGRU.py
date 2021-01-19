@@ -1,6 +1,5 @@
 import tensorflow as tf
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 import pickle
 import time
@@ -1007,6 +1006,7 @@ class M_reluGRU:
             pickle.dump(self.test_accuracy,output_file)
             pickle.dump(self.test_loss_list,output_file)
             pickle.dump(self.test_accuracy_list,output_file)
+        pickle.dump(self.ooo,output_file)
         pickle.dump(self.total_epoch,output_file)
         pickle.dump(self.total_time,output_file)
         pickle.dump(self.processor,output_file)
@@ -1065,6 +1065,7 @@ class M_reluGRU:
             self.test_accuracy=pickle.load(input_file)
             self.test_loss_list=pickle.load(input_file)
             self.test_accuracy_list=pickle.load(input_file)
+        self.ooo=pickle.load(input_file)
         self.total_epoch=pickle.load(input_file)
         self.total_time=pickle.load(input_file)
         self.processor=pickle.load(input_file)
@@ -1107,9 +1108,6 @@ class M_reluGRU:
                         output_file=open(save_path,'wb')
                         pickle.dump(output,output_file)
                         output_file.close()
-                    elif save_csv!=None:
-                        data=pd.DataFrame(output)
-                        data.to_csv(save_csv,index=False,header=False)
                     return output
                 else:
                     if len(_output.shape)==2:
@@ -1121,9 +1119,6 @@ class M_reluGRU:
                         output_file=open(save_path,'wb')
                         pickle.dump(output,output_file)
                         output_file.close()
-                    elif save_csv!=None:
-                        data=pd.DataFrame(output)
-                        data.to_csv(save_csv,index=False,header=False)
                     return output
                     
                     
@@ -1144,7 +1139,4 @@ class M_reluGRU:
                 output_file=open(save_path,'wb')
                 pickle.dump(output,output_file)
                 output_file.close()
-            elif save_csv!=None:
-                data=pd.DataFrame(output)
-                data.to_csv(save_csv,index=False,header=False)
             return output
