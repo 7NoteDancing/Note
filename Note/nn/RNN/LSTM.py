@@ -1,6 +1,5 @@
 import tensorflow as tf
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 import pickle
 import time
@@ -1203,6 +1202,7 @@ class LSTM:
             pickle.dump(self.test_accuracy,output_file)
             pickle.dump(self.test_loss_list,output_file)
             pickle.dump(self.test_accuracy_list,output_file)
+        pickle.dump(self.ooo,output_file)
         pickle.dump(self.total_epoch,output_file)
         pickle.dump(self.total_time,output_file)
         pickle.dump(self.processor,output_file)
@@ -1273,6 +1273,7 @@ class LSTM:
             self.test_accuracy=pickle.load(input_file)
             self.test_loss_list=pickle.load(input_file)
             self.test_accuracy_list=pickle.load(input_file)
+        self.ooo=pickle.load(input_file)
         self.total_epoch=pickle.load(input_file)
         self.total_time=pickle.load(input_file)
         self.processor=pickle.load(input_file)
@@ -1281,7 +1282,7 @@ class LSTM:
         return
 
 
-    def classify(self,data,one_hot=False,save_path=None,save_csv=None,processor=None):
+    def classify(self,data,one_hot=False,save_path=None,processor=None):
         with self.graph.as_default():
             if processor!=None:
                 self.processor=processor
@@ -1315,9 +1316,6 @@ class LSTM:
                         output_file=open(save_path,'wb')
                         pickle.dump(output,output_file)
                         output_file.close()
-                    elif save_csv!=None:
-                        data=pd.DataFrame(output)
-                        data.to_csv(save_csv,index=False,header=False)
                     return output
                 else:
                     if len(_output.shape)==2:
@@ -1329,13 +1327,10 @@ class LSTM:
                         output_file=open(save_path,'wb')
                         pickle.dump(output,output_file)
                         output_file.close()
-                    elif save_csv!=None:
-                        data=pd.DataFrame(output)
-                        data.to_csv(save_csv,index=False,header=False)
                     return output
                     
                     
-    def predicate(self,data,save_path=None,save_csv=None,processor=None):
+    def predicate(self,data,save_path=None,processor=None):
         with self.graph.as_default():
             if processor!=None:
                 self.processor=processor
@@ -1352,7 +1347,4 @@ class LSTM:
                 output_file=open(save_path,'wb')
                 pickle.dump(output,output_file)
                 output_file.close()
-            elif save_csv!=None:
-                data=pd.DataFrame(output)
-                data.to_csv(save_csv,index=False,header=False)
             return output
