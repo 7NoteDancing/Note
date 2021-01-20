@@ -299,7 +299,6 @@ class transformer:
                     batch_acc=batch_acc.numpy()
                     total_acc+=batch_acc
                 if self.shape0%batch!=0:
-                    batches+=1
                     self.tf2.batches+=1
                     self.tf2.index1=batches*batch
                     self.tf2.index2=batch-(self.shape0-batches*batch)
