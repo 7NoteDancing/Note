@@ -375,6 +375,7 @@ class transformer:
                     print('epoch:{0}   loss:{1:.6f}'.format(self.total_epoch+i+1,self.train_loss))
                 if model_path!=None and i%epoch*2==0:
                     self.save(model_path,i,one)
+        self.qw1=[variable[:self.h]]
         t2=time.time()
         _time=(t2-t1)-int(t2-t1)
         if _time<0.5:
