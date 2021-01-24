@@ -454,8 +454,8 @@ class unnamed:
             
           
         with tf.name_scope('save_data_msg'):
-            pickle.dump(self.tf1.dtype)
-            pickle.dump(self.tf1.shape)           
+            pickle.dump(self.tf1.dtype,output_file)
+            pickle.dump(self.tf1.shape,output_file)           
         with tf.name_scope('save_hyperparameter'):
             pickle.dump(self.batch,output_file)
             pickle.dump(self.epoch,output_file)
