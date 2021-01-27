@@ -154,8 +154,7 @@ class MCPG:
         input_file=open(path,'rb')
         self.episode=pickle.load(input_file)
         self.action_len=pickle.load(input_file)
-        if self.action_len==len(self.action_name):
-            self.action=pickle.load(input_file)
+        self.action=pickle.load(input_file)
         self.reward_list=pickle.load(input_file)
         self.epsilon=pickle.load(input_file)
         self.discount=pickle.load(input_file)
