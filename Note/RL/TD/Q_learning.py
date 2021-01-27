@@ -156,9 +156,8 @@ class Q_learning:
         input_file=open(path,'rb')
         self.episode=pickle.load(input_file)
         self.action_len=pickle.load(input_file)
-        if self.action_len==len(self.action_name):
-            self.action=pickle.load(input_file)
-            self.action_onerob=pickle.load(input_file)
+        self.action=pickle.load(input_file)
+        self.action_onerob=pickle.load(input_file)
         self.epsilon=pickle.load(input_file)
         self.alpha=pickle.load(input_file)
         self.discount=pickle.load(input_file)
