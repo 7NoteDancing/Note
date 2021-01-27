@@ -15,6 +15,7 @@ class value_iteration:
         self.theta=theta
         self.delta=0
         self.end_flag=end_flag
+        self.ite_num=0
         self.iteration_num=0
         self.total_iteration=0
         self.time=0
@@ -86,6 +87,7 @@ class value_iteration:
             output_file=open(path+'.dat','wb')
         else:
             output_file=open(path+'-{0}.dat'.format(i+1),'wb')
+        self.iteration_num=self.ite_num
         pickle.dump(self.state_len,output_file)
         pickle.dump(self.action_len,output_file)
         pickle.dump(self.V,output_file)
