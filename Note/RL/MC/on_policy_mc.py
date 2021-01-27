@@ -19,6 +19,7 @@ class on_policy_mc:
         self.episode_step=episode_step
         self.save_episode=save_episode
         self.delta=0
+        self.epi_num=0
         self.episode_num=0
         self.total_episode=0
         self.time=0
@@ -124,7 +125,7 @@ class on_policy_mc:
                 print('episode num:{0}   delta:{1:.6f}'.format(i+1,self.delta))
                 if path!=None and i%episode_num*2==0:
                     self.save(path,i,one)
-            self.episode_num+=1
+            self.epi_num+=1
             self.total_episode+=1
             t2=time.time()
             self.time+=(t2-t1)
@@ -146,6 +147,7 @@ class on_policy_mc:
             output_file=open(path+'.dat','wb')
         else:
             output_file=open(path+'-{0}.dat'.format(i+1),'wb')
+        self.episode_num=self.epi_num
         pickle.dump(self.episode,output_file)
         pickle.dump(self.r_sum,output_file)
         pickle.dump(self.r_count,output_file)
