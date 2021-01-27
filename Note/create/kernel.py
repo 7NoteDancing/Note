@@ -54,10 +54,10 @@ class kernel:
         self.processor='GPU:0'
 
 
-    def init(self):
+    def init(self,parameter=None):
         self.nn.flag=0
-        self.parameter=[]
-        self.nn.parameter=[]
+        if parameter!=None:
+            self.parameter=parameter
         self.train_loss_list.clear()
         self.train_acc_list.clear()
         self.test_loss_list.clear()
