@@ -26,6 +26,7 @@ class value_iteration:
         self.A=np.zeros(len(self.action_name),dtype=np.float16)
         return
     
+    
     def learn(self,iteration=None,path=None,one=True):
         if iteration==None:
             iteration=int(len(self.state_name)*3)
