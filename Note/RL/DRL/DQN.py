@@ -29,9 +29,10 @@ class DQN:
         self.optimizer=optimizer
         self.save_episode=save_episode
         self.opt_flag==False
-        self.episode_num=0
-        self._random=None
         self.a=0
+        self._random=None
+        self.epi_num=0
+        self.episode_num=0
         self.total_episode=0
         self.time=0
         self.total_time=0
@@ -254,7 +255,7 @@ class DQN:
                 print('episode num:{0}   loss:{1:.6f}'.format(i+1,loss))
                 if path!=None and i%episode_num*2==0:
                     self.save(path,i,one)
-            self.episode_num+=1
+            self.epi_num+=1
             self.total_episode+=1
             if self.save_episode==True:
                 self.episode.append(episode)
@@ -274,6 +275,7 @@ class DQN:
             output_file=open(path+'.dat','wb')
         else:
             output_file=open(path+'-{0}.dat'.format(i+1),'wb')
+        self.episode_num=self.epi_num
         pickle.dump(self.state_pool,output_file)
         pickle.dump(self.action_pool,output_file)
         pickle.dump(self.next_state_pool,output_file)
@@ -293,9 +295,9 @@ class DQN:
         pickle.dump(self.optimizer,output_file)
         pickle.dump(self.save_episode,output_file)
         pickle.dump(self.opt_flag,output_file)
-        pickle.dump(self.episode_num,output_file)
-        pickle.dump(self._random,output_file)
         pickle.dump(self.a,output_file)
+        pickle.dump(self._random,output_file)
+        pickle.dump(self.episode_num,output_file)
         pickle.dump(self.total_episode,output_file)
         pickle.dump(self.total_time,output_file)
         output_file.close()
@@ -323,9 +325,9 @@ class DQN:
         self.optimizer=pickle.load(input_file)
         self.save_episode=pickle.load(input_file)
         self.opt_flag=pickle.load(input_file)
-        self.episode_num=pickle.load(input_file)
-        self._random=pickle.load(input_file)
         self.a=pickle.load(input_file)
+        self._random=pickle.load(input_file)
+        self.episode_num=pickle.load(input_file)
         self.total_episode=pickle.load(input_file)
         self.total_time=self.time
         input_file.close()
