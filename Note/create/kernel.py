@@ -53,9 +53,10 @@ class Note:
         self.processor='GPU:0'
     
     
-    def init(self):
+    def init(self,parameter=None):
         self.nn.flag=0
-        self.parameter=[]
+        if parameter!=None:
+            self.parameter=parameter
         self.nn.parameter=[]
         self.train_loss_list.clear()
         self.train_acc_list.clear()
