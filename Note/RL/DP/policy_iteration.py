@@ -16,7 +16,7 @@ class policy_iteration:
         self.delta=0
         self.end_flag=end_flag
         self.iteration_num=0
-        self.total_iteration_sum=0
+        self.total_iteration=0
         self.time=0
         self.total_time=0
     
@@ -81,7 +81,7 @@ class policy_iteration:
                 if path!=None and self.iteration_num%iteration*2==0:
                     self.save(path,self.iteration_num,one)
             self.iteration_num+=1
-            self.total_iteration_sum+=1
+            self.total_iteration+=1
             t2=time.time()
             self.time+=(t2-t1)
             if flag:
@@ -108,7 +108,8 @@ class policy_iteration:
         pickle.dump(self.discount,output_file)
         pickle.dump(self.theta,output_file)
         pickle.dump(self.end_flag,output_file)
-        pickle.dump(self.total_iteration_sum,output_file)
+        pickle.dump(self.iteration_num,output_file)
+        pickle.dump(self.total_iteration,output_file)
         pickle.dump(self.total_time,output_file)
         output_file.close()
         return
@@ -123,7 +124,8 @@ class policy_iteration:
         self.discount=pickle.load(input_file)
         self.theta=pickle.load(input_file)
         self.end_flag=pickle.load(input_file)
-        self.total_iteration_sum=pickle.load(input_file)
+        self.iteration_num=pickle.load(input_file)
+        self.total_iteration=pickle.load(input_file)
         self.total_time=self.time
         input_file.close()
         return
