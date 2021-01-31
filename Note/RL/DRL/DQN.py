@@ -131,6 +131,7 @@ class DQN:
                             self.update_parameter()
                     else:
                         self.batches=int((len(self.state_pool)-len(self.state_pool)%self.batch)/self.batch)
+                        loss=0
                         for j in range(self.batches):
                             index1=j*self.batch
                             index2=(j+1)*self.batch
@@ -162,8 +163,8 @@ class DQN:
                             loss=loss.numpy()
                         else:
                             loss=loss.numpy()/self.batches
-                    if self.a%self.update_step==0:
-                        self.update_parameter()
+                        if self.a%self.update_step==0:
+                            self.update_parameter()
                     t2=time.time()
                     self.time+=(t2-t1)
 
@@ -208,6 +209,7 @@ class DQN:
                             self.update_parameter()
                     else:
                         self.batches=int((len(self.state_pool)-len(self.state_pool)%self.batch)/self.batch)
+                        loss=0
                         for j in range(self.batches):
                             index1=j*self.batch
                             index2=(j+1)*self.batch
@@ -239,8 +241,8 @@ class DQN:
                             loss=loss.numpy()
                         else:
                             loss=loss.numpy()/self.batches
-                    if self.a%self.update_step==0:
-                        self.update_parameter()
+                        if self.a%self.update_step==0:
+                            self.update_parameter()
                     t2=time.time()
                     self.time+=(t2-t1)
             if episode_num%10!=0:
