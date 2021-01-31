@@ -88,7 +88,6 @@ class DQN:
     
     def learn(self,episode_num,path=None,one=True):
         for i in range(episode_num):
-            loss=0
             episode=[]
             s=int(np.random.uniform(0,len(self.state_name)))
             if self.episode_step==None:
