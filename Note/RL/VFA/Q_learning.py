@@ -65,11 +65,11 @@ class Q_learning:
                     next_s,r,end=self.exploration_space[self.state_name[s]][self.action_name[a]]
                     with tf.GradientTape() as tape:
                         loss+=self.loss(s,a,next_s,r)
-                    gradient=tape.gradient(1/2*loss,self.net_p)
-                    if self.opt_flag==True:
-                        self.optimizer(gradient,self.net_p)
-                    else:
-                        self.optimizer.apply_gradients(zip(gradient,self.net_p))
+                        gradient=tape.gradient(1/2*loss,self.net_p)
+                        if self.opt_flag==True:
+                            self.optimizer(gradient,self.net_p)
+                        else:
+                            self.optimizer.apply_gradients(zip(gradient,self.net_p))
                     loss=loss.numpy()
                     if end:
                         if self.save_episode==True:
@@ -90,11 +90,11 @@ class Q_learning:
                     next_s,r,end=self.exploration_space[self.state_name[s]][self.action_name[a]]
                     with tf.GradientTape() as tape:
                         loss+=self.loss(s,a,next_s,r)
-                    gradient=tape.gradient(1/2*loss,self.net_p)
-                    if self.opt_flag==True:
-                        self.optimizer(gradient,self.net_p)
-                    else:
-                        self.optimizer.apply_gradients(zip(gradient,self.net_p))
+                        gradient=tape.gradient(1/2*loss,self.net_p)
+                        if self.opt_flag==True:
+                            self.optimizer(gradient,self.net_p)
+                        else:
+                            self.optimizer.apply_gradients(zip(gradient,self.net_p))
                     loss=loss.numpy()
                     if end:
                         if self.save_episode==True:
