@@ -92,11 +92,11 @@ class MCPG:
             s=int(np.random.uniform(0,len(self.state_name)))
             with tf.GradientTape() as tape:
                 loss=self.episode(s,self.action)
-            gradient=tape.gradient(loss,self.net_p)
-            if self.opt_flag==True:
-                self.optimizer(gradient,self.net_p)
-            else:
-                self.optimizer.apply_gradients(zip(gradient,self.net_p))
+                gradient=tape.gradient(loss,self.net_p)
+                if self.opt_flag==True:
+                    self.optimizer(gradient,self.net_p)
+                else:
+                    self.optimizer.apply_gradients(zip(gradient,self.net_p))
             t2=time.time()
             self.time+=(t2-t1)
             t2=time.time()
